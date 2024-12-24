@@ -1,34 +1,101 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-
-form {
-    max-width: 400px;
-    margin: auto;
+.login-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+.login-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.login-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+.login-container input {
+    width: 100%;
     padding: 10px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-input[type="text"], input[type="password"] {
-    width: 100%;
-    padding: 8px;
-    margin: 8px 0;
     box-sizing: border-box;
 }
-
-button {
+.login-container button {
     width: 100%;
-    background-color: #4CAF50;
-    color: white;
     padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.login-container button:hover {
+    background-color: #218838;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between; /* 在按鈕之間添加空隙 */
+    gap: 10px; /* 按鈕之間的空隙 */
+}
+
+.button-container button {
+    flex: 1; /* 使兩個按鈕自適應並佔據相等空間 */
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #45a049;
+.button-container #login:hover {
+    background-color: #218838;
+}
+
+.button-container #register {
+    background-color: #007bff; /* 設置註冊按鈕的顏色與登入按鈕不同 */
+}
+
+.button-container #register:hover {
+    background-color: #0069d9; /* 註冊按鈕的懸停效果 */
+}
+
+/* Flash 通知橫幅樣式 */
+.flash-message {
+    position: fixed;
+    top: -100px;
+    left: 0;
+    right: 0;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 15px;
+    text-align: center;
+    z-index: 9999;
+    transition: top 0.5s ease-in-out;
+}
+
+.flash-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flash-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.flash-visible {
+    top: 0;
 }

@@ -1,27 +1,18 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
-from sqlalchemy import Enum
-from flask_migrate import Migrate
-from decimal import Decimal
-from datetime import datetime
-import os
+from enum import Enum
+from app import db
 
-app = Flask(__name__)
-
-# 資料庫配置
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/flask_db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-# Define User Model
+# User Roles Enum
 class UserRoleEnum(Enum):
-    ADMIN = "Admin"
-    RESTAURANT = "Restaurant"
-    CUSTOMER = "Customer"
-    DELIVERY_PERSON = "Delivery_Person"
+    ADMIN = "ADMIN"
+    RESTAURANT = "RESTAURANT"
+    CUSTOMER = "CUSTOMER"
+    DELIVERY_PERSON = "DELIVERY_PERSON"
     
+    def __str__(self):
+        return self.value  # 返回枚舉的字串值
+
+# User Model
 class User(db.Model):
     __tablename__ = 'users'
     
@@ -35,19 +26,19 @@ class User(db.Model):
     
     def __repr__(self):
         return f'User {self.username}'
-    
-# Define Restaurant Model
+
+# Restaurant Model
 class Restaurant(db.Model):
     __tablename__ = 'restaurants'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
-    address = db.Column(db.Text, nullable=False)
+    address = db.Column(db.Text)
     phone = db.Column(db.String(25), unique=True, nullable=False)
     account_balance = db.Column(db.Numeric(10, 2), nullable=False, default=0.00)
-    
-# Define Menu Model
+
+# Menu Model
 class Menu(db.Model):
     __tablename__ = 'menus'
     
@@ -59,8 +50,8 @@ class Menu(db.Model):
     available = db.Column(db.Boolean, nullable=False)
     
     restaurant = db.relationship('Restaurant', backref='menus')
-    
-# Define Customers Model
+
+# Customer Model
 class Customer(db.Model):
     __tablename__ = 'customers'
     
@@ -69,9 +60,8 @@ class Customer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(25), unique=True, nullable=False)    
-    address = db.Column(db.Text, nullable=False)
-    
-# Define Delivery Persons Model
+
+# DeliveryPerson Model
 class DeliveryPerson(db.Model):
     __tablename__ = 'delivery_persons'
     
@@ -82,12 +72,26 @@ class DeliveryPerson(db.Model):
     current_order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), unique=True)
     earnings = db.Column(db.Numeric(10, 2), nullable=False, default=0.00)
     
-# Define Order Model
+    current_order = db.relationship('Order', backref='assigned_delivery_person', foreign_keys=[current_order_id])
+
+# Order Model
 class PaymentStatusEnum(Enum):
-    PENDING = "Pending"
-    COMPLETED = "Completed"
-    REFUNDED = "Refunded"
-    FAILED = "Failed"
+    PENDING = "PENDING"
+    COMPLETED = "COMPLETED"
+    REFUNDED = "REFUNDED"
+    FAILED = "FAILED"
+
+    def __str__(self):
+        return self.value  # 返回枚舉的字串值
+
+class OrderStatusEnum(Enum):
+    PREPARING = "PREPARING"            # 商家正在準備中
+    READY_FOR_PICKUP = "READY_FOR_PICKUP"  # 訂單已準備好，可供取餐或配送
+    OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY"  # 訂單正在配送中
+    DELIVERED = "DELIVERED"            # 訂單已送達
+    
+    def __str__(self):
+        return self.value  # 返回枚舉的字串值    
     
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -95,35 +99,43 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False)
-    delivery_person_id = db.Column(db.Integer, db.ForeignKey('delivery_persons.id'), nullable=False)
-    order_status = db.Column(db.String(10), nullable=False)
-    total_amount = db.Column(db.Integer, nullable=False)
+    delivery_person_id = db.Column(db.Integer, db.ForeignKey('delivery_persons.id'))
+    order_details = db.Column(db.Text, nullable=False)
+    order_status = db.Column(db.Enum(OrderStatusEnum), nullable=False)
+    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
     order_time = db.Column(db.DateTime, default=func.now(), nullable=False)
-    delivery_time = db.Column(db.DateTime, default=func.now())
+    delivery_time = db.Column(db.DateTime)
     delivery_address = db.Column(db.Text, nullable=False)
     payment_status = db.Column(db.Enum(PaymentStatusEnum), nullable=False, default=PaymentStatusEnum.PENDING)
-    
-    restaurant = db.relationship('Restaurant', backref='orders')
-    
-# Define Review Model
+
+    restaurant = db.relationship('Restaurant', backref=db.backref('orders', lazy=True))
+    customer = db.relationship('Customer', backref=db.backref('orders', lazy=True))
+    delivery_person = db.relationship('DeliveryPerson', backref=db.backref('orders', lazy=True), foreign_keys=[delivery_person_id])
+
+# Review Model
 class Review(db.Model):
     __tablename__ = 'reviews'
     
     id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False)
     delivery_person_id = db.Column(db.Integer, db.ForeignKey('delivery_persons.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False, default=0)
     comment = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=func.now(), nullable=False)
+    
+    restaurant = db.relationship('Restaurant', backref=db.backref('reviews', lazy=True))
+    customer = db.relationship('Customer', backref=db.backref('reviews', lazy=True))
+    delivery_person = db.relationship('DeliveryPerson', backref=db.backref('reviews', lazy=True))
 
-# Define Settlement Model
+# Settlement Model
 class Settlement(db.Model):
     __tablename__ = 'settlements'
     
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False, unique=True)
-    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False, unique=True)
-    delivery_person_id = db.Column(db.Integer, db.ForeignKey('delivery_persons.id'), nullable=False, unique=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False)
+    delivery_person_id = db.Column(db.Integer, db.ForeignKey('delivery_persons.id'), nullable=False)
     amount = db.Column(db.Numeric(10, 2), nullable=False, default=0.00)
     transaction_date = db.Column(db.DateTime, default=func.now(), nullable=False)

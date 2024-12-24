@@ -3,25 +3,26 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 
-# 初始化 SQLAlchemy 和 Migrate
+# 初始化 SQLAlchemy 和 Migrate 實例
 db = SQLAlchemy()
 migrate = Migrate()
 
 def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
+    # 創建 Flask 應用
+    app = Flask(__name__, template_folder='views')
+    app.config.from_object(Config)  # 從 config.py 載入配置
 
-    # 初始化資料庫
+    # 初始化 db 和 migrate
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # 註冊 Blueprints
-    from app.controllers.user import user_bp
-    from app.controllers.restaurant import restaurant_bp
-    from app.controllers.order import order_bp
+    # 延遲匯入以避免循環匯入問題
+    with app.app_context():
+        from app.controllers.routes import main_blueprint
+        from app.controllers.auth_controller import auth_blueprint
 
-    app.register_blueprint(user_bp, url_prefix='/users')
-    app.register_blueprint(restaurant_bp, url_prefix='/restaurants')
-    app.register_blueprint(order_bp, url_prefix='/orders')
+        # 註冊 Blueprints
+        app.register_blueprint(main_blueprint)
+        app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     return app
