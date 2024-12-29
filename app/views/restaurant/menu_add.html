@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>新增菜單項目</h1>
+
+<form method="POST" action="{{ url_for('restaurant.edit_menu') }}">
+    <label for="item_name">名稱:</label>
+    <input type="text" name="item_name" id="item_name" required><br>
+
+    <label for="price">價格:</label>
+    <input type="number" step="0.01" name="price" id="price" required><br>
+
+    <label for="description">描述:</label>
+    <textarea name="description" id="description" rows="3" required></textarea><br>
+
+    <label for="available">是否可供應:</label>
+    <select name="available" id="available">
+        <option value="yes">是</option>
+        <option value="no">否</option>
+    </select><br>
+
+    <button type="submit">新增</button>
+</form>
+
+<a href="{{ url_for('restaurant.view_menu') }}">返回菜單列表</a>
+{% endblock %}
