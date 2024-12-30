@@ -53,10 +53,14 @@ def admin_dashboard():
 @main_blueprint.route('/restaurant_dashboard')
 def restaurant_dashboard():
     if 'user_id' in session and session.get('role') == 'RESTAURANT':
-        return render_template('restaurant/restaurant_dashboard.html')  # 顯示餐廳主頁
+        # 從 session 中獲取 user_id
+        user_id = session.get('user_id')
+        # 將 user_id 傳遞到模板
+        return redirect(url_for('restaurant.restaurant_dashboard'))  # 顯示餐廳主頁
     else:
         flash("You need to log in as a restaurant.", "warning")
         return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
+
 
 # 客戶主頁
 @main_blueprint.route('/customer_dashboard')
