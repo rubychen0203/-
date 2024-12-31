@@ -20,9 +20,12 @@ def create_app():
     with app.app_context():
         from app.controllers.routes import main_blueprint
         from app.controllers.auth_controller import auth_blueprint
-
+        from app.controllers.cus_controller import customer_blueprint
         # 註冊 Blueprints
         app.register_blueprint(main_blueprint)
         app.register_blueprint(auth_blueprint, url_prefix='/auth')
+        app.register_blueprint(customer_blueprint, url_prefix='/customer')
+
+    return app
 
     return app

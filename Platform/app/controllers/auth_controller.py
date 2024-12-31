@@ -60,6 +60,27 @@ def register():
 
     return render_template('register.html')
 
+# 根據用戶角色導向不同的主頁
+@auth_blueprint.route('/dashboard')
+def dashboard():
+    if 'user_id' in session:
+        user_role = session.get('role')  # 從 session 獲取用戶角色
+        if user_role == 'ADMIN':
+            return redirect(url_for('main.platform_dashboard'))  # 管理員主頁
+        elif user_role == 'RESTAURANT':
+            return redirect(url_for('main.restaurant_dashboard'))  # 商家主頁
+        elif user_role == 'CUSTOMER':
+            return redirect(url_for('main.customer_dashboard'))  # 客戶主頁
+        elif user_role == 'DELIVERY_PERSON':
+            return redirect(url_for('main.delivery_dashboard'))  # 外送員主頁
+        else:
+            flash("Invalid role.", "warning")
+            return redirect(url_for('auth.login'))  # 若角色無效，跳轉到登入頁面
+    else:
+        flash("You need to log in first.", "warning")
+        return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
+
+
 @auth_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

@@ -1,4 +1,4 @@
-from app.models import db,User, Restaurant, Menu, Order, Customer, DeliveryPerson
+from app.models import db,User, Restaurant, Menu, Order, Customer, DeliveryPerson,Review
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.dialects import mysql
 # 獲取所有餐廳
@@ -114,3 +114,47 @@ def update_order_status(order_id):
         db.session.rollback()
         print(f"Database error: {e}")
         return {'success': False, 'error': str(e)}
+    
+from app.models import db, Review, Order
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
+
+# 保存评分和评论
+def save_review(order_id, rating, comment):
+    """
+    保存用户提交的评分和评论到 reviews 表。
+    
+    Args:
+        order_id (int): 订单 ID。
+        rating (int): 用户评分（1~5）。
+        comment (str): 用户评论（可选）。
+    
+    Returns:
+        tuple: (success: bool, message: str)
+    """
+    try:
+        # 获取订单信息
+        order = Order.query.get(order_id)
+        if not order:
+            return False, "Order not found."
+
+        # 创建评分记录
+        new_review = Review(
+            order_id=order_id,
+            customer_id=order.customer_id,
+            restaurant_id=order.restaurant_id,
+            delivery_person_id=order.delivery_person_id,
+            rating=rating,
+            comment=comment,
+            created_at=datetime.now()
+        )
+
+        # 插入数据
+        db.session.add(new_review)
+        db.session.commit()
+        print("Review inserted successfully.")
+        return True, "Review saved successfully."
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        print(f"Database error: {e}")
+        return False, f"Database error: {e}"

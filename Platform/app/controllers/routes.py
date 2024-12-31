@@ -23,7 +23,7 @@ def test_restaurants():
 @main_blueprint.route('/')
 def index():
     if 'user_id' in session:
-        return redirect(url_for('main.home'))  # 如果已登入，跳轉到 home 頁面
+        return redirect(url_for('auth.dashboard'))  # 如果已登入，跳轉到 home 頁面
     return redirect(url_for('auth.login'))  # 否則跳轉到登入頁
 
 # 登入頁面
@@ -37,7 +37,7 @@ def register():
     return render_template('register.html')
 
 # # 根據用戶角色導向不同的主頁
-# @main_blueprint.route('/dashboard')
+# @main_blueprint.route('/home')
 # def dashboard():
 #     if 'user_id' in session:
 #         user_role = session.get('role')  # 從 session 獲取用戶角色

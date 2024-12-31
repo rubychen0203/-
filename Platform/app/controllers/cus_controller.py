@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from datetime import datetime
-from app.controllers.cus_db import get_restaurants, get_menus_by_restaurant, get_menu_item, insert_order, get_order_status, update_order_status,get_customer_id_by_user_id
+from app.controllers.cus_db import get_restaurants, get_menus_by_restaurant, get_menu_item, insert_order, get_order_status, update_order_status,get_customer_id_by_user_id,save_review
 
 customer_blueprint = Blueprint('customer', __name__, template_folder='../views/customer')
 
@@ -84,9 +84,29 @@ def update_order_status_route(order_id):
     else:
         return {'success': False, 'error': result['error']}, 500
 
-@customer_blueprint.route('/success')
+@customer_blueprint.route('/success', methods=['GET'])
 def order_success():
-    return render_template('/customer/order_success.html')
+    order_id = request.args.get('order_id', type=int)
+    return render_template('/customer/order_success.html', order_id=order_id)
+
+@customer_blueprint.route('/submit_review', methods=['POST'])
+def submit_review():
+        # 获取表单数据
+    rating = int(request.form['rating'])
+    comment = request.form.get('comment', '').strip()  # 默认为空字符串
+    order_id = int(request.form['order_id'])
+
+    # 调用 DB 层处理
+    success, message = save_review(order_id, rating, comment)
+
+    if success:
+        print('success')
+        flash("Thank you for your feedback!", "success")
+    else:
+        print('???')
+        flash(message, "danger")
+
+    return redirect(url_for('main.index'))  # 提交后返回主页或其他页面
 
 # @customer_blueprint.route('/clear_session')
 # def clear_session():

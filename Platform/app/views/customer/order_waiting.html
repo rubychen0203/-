@@ -41,7 +41,7 @@
             // 检查是否完成
             if (orderStatus === 'DELIVERED' && paymentStatus === 'COMPLETED') {
                 window.onbeforeunload = null;
-                window.location.href = '/customer/success';
+                window.location.href = `/customer/success?order_id=${orderId}`;
                 
             }
         })
