@@ -6,10 +6,19 @@ def get_restaurants():
     try:
         restaurants = Restaurant.query.all()
         print(db.engine.url)
-        return [{'id': r.id, 'name': r.name, 'address': r.address} for r in restaurants]
+        return [
+            {
+                'id': r.id,
+                'name': r.name,
+                'address': r.address,
+                'phone': r.phone  # 添加 phone 字段
+            }
+            for r in restaurants
+        ]
     except SQLAlchemyError as e:
         print(f"Database error: {e}")
         return []
+
 
 # 獲取特定菜單項目
 def get_menu_item(item_id):
