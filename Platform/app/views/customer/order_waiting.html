@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Waiting</title>
+    <style>
+        /* 小角落狀態顯示區域樣式 */
+        #statusCorner {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+    <script>
+        // 禁止頁面離開
+        window.onbeforeunload = function() {
+            return "Your order is still being processed. Are you sure you want to leave?";
+        };
+    
+        // 每隔 5 秒檢查訂單狀態
+        function checkOrderStatus(orderId) {
+        fetch(`/customer/check_order_status/${orderId}`)
+        .then(response => response.json())
+        .then(data => {
+            // 从嵌套的 status 对象中获取数据
+            const orderStatus = data.status.order_status;
+            const paymentStatus = data.status.payment_status;
+
+            console.log('Order Status:', orderStatus);
+            console.log('Payment Status:', paymentStatus);
+
+            // 更新显示
+            document.getElementById('orderStatus').innerText = `Order Status: ${orderStatus}`;
+            document.getElementById('paymentStatus').innerText = `Payment Status: ${paymentStatus}`;
+
+            // 检查是否完成
+            if (orderStatus === 'DELIVERED' && paymentStatus === 'COMPLETED') {
+                window.onbeforeunload = null;
+                window.location.href = '/customer/success';
+                
+            }
+        })
+        .catch(error => console.error('Error checking order status:', error));
+}
+    
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const orderId = {{ order_id | tojson | safe }};
+        console.log('DEBUG: orderId =', orderId); // 调试信息
+        setInterval(function() {
+            checkOrderStatus(orderId);
+        }, 5000);
+    });
+</script>
+
+    </script>
+</head>
+<body>
+    <h1>Your order is being processed...</h1>
+    <p>Please do not leave this page until your order is complete.</p>
+
+    <!-- 狀態更新按鈕 -->
+    <form action="{{ url_for('customer.update_order_status_route', order_id=order_id) }}" method="POST">
+        <button type="submit">Update Order Status</button>
+    </form>
+
+    <!-- 小角落顯示區域 -->
+    <div id="statusCorner">
+        <p id="orderStatus">Order Status: Loading...</p>
+        <p id="paymentStatus">Payment Status: Loading...</p>
+    </div>
+</body>
+</html>

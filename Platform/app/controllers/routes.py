@@ -3,6 +3,22 @@ from flask import Blueprint, redirect, url_for, render_template, session, flash
 # 建立 Blueprint
 main_blueprint = Blueprint('main', __name__)
 
+from flask import Flask, jsonify
+from app.controllers.cus_controller import get_restaurants
+
+
+
+@main_blueprint.route('/test_restaurants', methods=['GET'])
+def test_restaurants():
+    try:
+        restaurants = get_restaurants()
+        return jsonify(restaurants), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+
 # 根路徑跳轉至 login 或 home
 @main_blueprint.route('/')
 def index():
@@ -19,6 +35,26 @@ def login():
 @main_blueprint.route('/register')
 def register():
     return render_template('register.html')
+
+# # 根據用戶角色導向不同的主頁
+# @main_blueprint.route('/dashboard')
+# def dashboard():
+#     if 'user_id' in session:
+#         user_role = session.get('role')  # 從 session 獲取用戶角色
+#         if user_role == 'ADMIN':
+#             return redirect(url_for('main.platform_dashboard'))  # 管理員主頁
+#         elif user_role == 'RESTAURANT':
+#             return redirect(url_for('main.restaurant_dashboard'))  # 商家主頁
+#         elif user_role == 'CUSTOMER':
+#             return redirect(url_for('main.customer_dashboard'))  # 客戶主頁
+#         elif user_role == 'DELIVERY_PERSON':
+#             return redirect(url_for('main.delivery_dashboard'))  # 外送員主頁
+#         else:
+#             flash("Invalid role.", "warning")
+#             return redirect(url_for('auth.login'))  # 若角色無效，跳轉到登入頁面
+#     else:
+#         flash("You need to log in first.", "warning")
+#         return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
 
 # 管理員頁面
 @main_blueprint.route('/platform_dashboard')
@@ -42,10 +78,12 @@ def restaurant_dashboard():
 @main_blueprint.route('/customer_dashboard')
 def customer_dashboard():
     if 'user_id' in session and session.get('role') == 'CUSTOMER':
-        return render_template('customer/customer_dashboard.html')  # 顯示客戶主頁
+        restaurants = get_restaurants()
+        return render_template('customer/customer_dashboard.html', restaurants=restaurants)
     else:
         flash("You need to log in as a customer.", "warning")
-        return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
+        return redirect(url_for('auth.login'))
+
 
 # 外送員主頁
 @main_blueprint.route('/delivery_dashboard')

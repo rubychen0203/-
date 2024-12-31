@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <title>儀表板</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <title>Select Restaurant</title>
 </head>
 <body>
-
-<!-- flash通知-->
-{% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-        <div id="flash-messages">
-            {% for category, message in messages %}
-                <div class="flash-message flash-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
-
-    <p>CUSTOMER</p>
-    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <h1>Select a Restaurant</h1>
+    <ul>
+        {% for restaurant in restaurants %}
+        <li>
+            <strong>{{ restaurant.name }}</strong>
+            <p>Address: {{ restaurant.address }}</p>
+            <p>Phone: {{ restaurant.phone }}</p>
+            <a href="{{ url_for('customer.menu', restaurant_id=restaurant.id) }}">View Menu</a>
+        </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping Cart</title>
+</head>
+<body>
+    <h1>Your Shopping Cart</h1>
+    <ul>
+        {% if cart %}
+            {% for item in cart %}
+            <li>
+                <strong>{{ item['item_name'] }}</strong> - ${{ item['price'] }}
+                <p>{{ item['description'] }}</p>
+            </li>
+            {% endfor %}
+            <li><strong>Total:</strong> ${{ cart | sum(attribute='price') }}</li>
+        {% else %}
+            <p>Your cart is empty!</p>
+        {% endif %}
+    </ul>
+
+    {% if cart %}
+    <form method="POST" action="{{ url_for('customer.checkout') }}">
+        <label for="delivery_address">Delivery Address:</label>
+        <input type="text" name="delivery_address" required>
+        <button type="submit">Checkout</button>
+    </form>
+    {% endif %}
+
+    <hr>
+    <a href="{{ url_for('customer.menu',restaurant_id=restaurant_id) }}">Back to Menu</a>
+</body>
+</html>
