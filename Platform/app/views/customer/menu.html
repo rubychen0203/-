@@ -16,6 +16,16 @@
     </ul>
 
     <hr>
-    <a href="{{ url_for('customer.view_cart',restaurant_id=restaurant.id) }}">View Cart</a>
+    <a href="{{ url_for('customer.view_cart', restaurant_id=restaurant.id) }}">View Cart</a>
+    <br><br>
+
+    <!-- 添加回到首頁按鈕 -->
+    <a href="{{ url_for('main.index') }}">Return to Home</a>
+    <br><br>
+
+    <!-- 添加登出按鈕 -->
+    <form action="{{ url_for('auth.logout') }}" method="GET" style="display: inline;">
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>

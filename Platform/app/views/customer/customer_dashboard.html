@@ -15,5 +15,9 @@
         </li>
         {% endfor %}
     </ul>
+    <!-- 添加登出按鈕 -->
+    <form action="{{ url_for('auth.logout') }}" method="GET" style="display: inline;">
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>
