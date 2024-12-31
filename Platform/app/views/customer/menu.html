@@ -19,8 +19,8 @@
     <a href="{{ url_for('customer.view_cart', restaurant_id=restaurant.id) }}">View Cart</a>
     <br><br>
 
-    <!-- 添加回到首頁按鈕 -->
-    <a href="{{ url_for('main.index') }}">Return to Home</a>
+    <!-- 添加回到首頁並清空購物車按鈕 -->
+    <a href="{{ url_for('customer.clear_cart_and_home') }}">Return to Home</a>
     <br><br>
 
     <!-- 添加登出按鈕 -->

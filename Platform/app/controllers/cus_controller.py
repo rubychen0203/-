@@ -89,6 +89,12 @@ def order_success():
     order_id = request.args.get('order_id', type=int)
     return render_template('/customer/order_success.html', order_id=order_id)
 
+@customer_blueprint.route('/clear_cart_and_home')
+def clear_cart_and_home():
+    session.pop('cart', None)  # 清空购物车
+    flash("Cart has been cleared.", "info")
+    return redirect(url_for('main.index'))  # 重定向到首页
+
 @customer_blueprint.route('/submit_review', methods=['POST'])
 def submit_review():
         # 获取表单数据
