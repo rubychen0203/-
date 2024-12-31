@@ -33,7 +33,7 @@ def get_menu_item(item_id):
 def get_menus_by_restaurant(restaurant_id):
     try:
         # 創建查詢對象
-        query = Menu.query.filter(Menu.restaurant_id == restaurant_id, Menu.available == 1)
+        query = Menu.query.filter(Menu.restaurant_id == restaurant_id, Menu.available > 0)
 
         # 打印生成的 SQL（包含參數值）
         compiled_query = query.statement.compile(dialect=mysql.dialect(), compile_kwargs={"literal_binds": True})
