@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外送流程</title>
+</head>
+<body>
+    <h1>開始外送</h1>
+
+    <!-- 取餐階段 -->
+    <div id="pickup-container">
+        <div id="container">
+            <h2>取餐</h2>
+            {% for rec in orders %}
+<div class="order-card">
+    <h2>訂單編號: {{ rec.id }}</h2>
+    <div class="order-detail"><strong>取餐地點:</strong> {{ rec.restaurant_name }}</div>
+    <div class="order-detail"><strong>付款狀態:</strong> {{ rec.payment_status }}</div>
+    <div class="order-detail"><strong>訂單細項:</strong> {{ rec.order_details }}</div>
+    <div class="order-detail">
+        <strong>取餐地址:</strong>
+        <a href="https://www.google.com/maps?q={{ rec.restaurant_address }}" target="_blank" class="google-link">
+            {{ rec.restaurant_address }}
+        </a>
+    </div>
+    <button type="button" class="confirm-btn" onclick="completePickup({{ rec.id }})">完成取餐</button>
+</div>
+{% endfor %}
+
+        </div>
+    </div>
+
+    <!-- 送餐階段 -->
+    <div id="delivery-container" style="display: none;">
+        <div id="container">
+            <h2>送餐</h2>
+            {% for rec in orders %}
+<div class="order-card">
+    <h2>訂單編號: {{ rec.id }}</h2>
+    <div class="order-detail"><strong>買家應繳金額:</strong> ${{ rec.total_amount }}</div>
+    <div class="order-detail">
+        <strong>送餐地址:</strong>
+        <a href="https://www.google.com/maps?q={{ rec.delivery_address }}" target="_blank" class="google-link">
+            {{ rec.delivery_address }}
+        </a>
+    </div>
+    <button type="button" class="confirm-btn">
+        <a href="tel:{{ rec.customer_phone }}" style="color: white; text-decoration: none;">聯絡買家</a>
+    </button>
+    <a href="{{ url_for('delivery.complete_order', order_id=rec.id) }}" class="btn btn-danger">完成訂單</a>
+</div>
+{% endfor %}
+
+        </div>
+    </div>
+
+    <script>
+        function completePickup() {
+            // 隱藏取餐表單
+            document.getElementById('pickup-container').style.display = 'none';
+            // 顯示送餐表單
+            document.getElementById('delivery-container').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

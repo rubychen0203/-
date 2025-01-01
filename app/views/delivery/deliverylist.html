@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="keywords" content="外送, 訂單, 平台">
+<meta name="description" content="外送員待接清單">
+<title>待接清單</title>
+<style>
+    body {
+        background-color: #FFEEDD;
+        font-family: "微軟正黑體", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    #container {
+        width: 90%;
+        margin: 20px auto;
+        border: 15px solid #FFBD7A;
+        padding: 20px;
+        background-color: #FFFFFF;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #FF9966;
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    table th, table td {
+        border: 1px solid #FFBD7A;
+        padding: 10px;
+        text-align: center;
+    }
+    table th {
+        background-color: #FF9966;
+        color: #FFFFFF;
+        font-weight: bold;
+    }
+    table tr:nth-child(even) {
+        background-color: #FFF7E5;
+    }
+    table tr:nth-child(odd) {
+        background-color: #FFFAF0;
+    }
+    a {
+        text-decoration: none;
+        color: #007BFF;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .confirm-btn {
+        background-color: #28a745;
+        color: #FFFFFF;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+    .confirm-btn:hover {
+        background-color: #218838;
+    }
+    #fixed-buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #FFBD7A;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+    #fixed-buttons button {
+        flex: 1;
+        max-width: 200px;
+    }
+</style>
+</head>
+
+<body>
+    <div id="container">
+        {% extends "base.html" %}
+
+{% block content %}
+    <h1>待接單列表</h1>
+
+    {% if orders and orders|length > 0 %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>訂單編號</th>
+                    <th>取餐地址</th>
+                    <th>送達地址</th>
+                    <th>金額</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.restaurant_address }}</td>
+                        <td>{{ order.delivery_address }}</td>
+                        <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                        <td>
+                            <form action="{{ url_for('delivery.accept_order', order_id=order.id) }}" method="post">
+                                <button type="submit" class="btn btn-success">接單</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>目前沒有可用的訂單。</p>
+    {% endif %}
+
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">返回儀表板</a>
+{% endblock %}
+
+</html>
+
+
