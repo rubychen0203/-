@@ -91,6 +91,7 @@ class OrderStatusEnum(Enum):
     READY_FOR_PICKUP = "READY_FOR_PICKUP"  # 訂單已準備好，可供取餐或配送
     OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY"  # 訂單正在配送中
     DELIVERED = "DELIVERED"            # 訂單已送達
+    GET="GET"#確認取餐
     
     def __str__(self):
         return self.value  # 返回枚舉的字串值    

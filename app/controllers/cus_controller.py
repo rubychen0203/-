@@ -4,12 +4,6 @@ from app.controllers.cus_db import get_restaurants, get_menus_by_restaurant, get
 
 customer_blueprint = Blueprint('customer', __name__, template_folder='../views/customer')
 
-@customer_blueprint.route('/')
-def index():
-    restaurants = get_restaurants()
-    print(restaurants)
-    return render_template('customer_dashboard.html', restaurants=restaurants)  
-
 @customer_blueprint.route('/menu/<int:restaurant_id>')
 def menu(restaurant_id):
     

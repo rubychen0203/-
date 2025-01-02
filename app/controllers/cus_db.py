@@ -116,7 +116,7 @@ def update_order_status(order_id):
         order = Order.query.get(order_id)
         if not order:
             return {'success': False, 'error': 'Order not found'}
-        order.order_status = 'DELIVERED'
+        order.order_status = 'GET'
         db.session.commit()
         return {'success': True, 'order_id': order_id}
     except SQLAlchemyError as e:
