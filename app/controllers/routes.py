@@ -45,7 +45,7 @@ def dashboard():
         if user_role == 'ADMIN':
             return redirect(url_for('main.platform_dashboard'))  # 管理員主頁
         elif user_role == 'RESTAURANT':
-            return redirect(url_for('restaurant.restaurant_dashboard'))  # 商家主頁
+            return redirect(url_for('main.restaurant_dashboard'))  # 商家主頁
         elif user_role == 'CUSTOMER':
             return redirect(url_for('main.customer_dashboard'))  # 客戶主頁
         elif user_role == 'DELIVERY_PERSON':
@@ -94,7 +94,10 @@ def customer_dashboard():
 @main_blueprint.route('/delivery_dashboard')
 def delivery_dashboard():
     if 'user_id' in session and session.get('role') == 'DELIVERY_PERSON':
-        return render_template('delivery/delivery_dashboard.html')  # 顯示外送員主頁
+        # 從 session 中獲取 user_id
+        user_id = session.get('user_id')
+        # 將 user_id 傳遞到模板
+        return redirect(url_for('delivery.delivery_dashboard'))  # 顯示餐廳主頁
     else:
         flash("You need to log in as a delivery person.", "warning")
         return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁

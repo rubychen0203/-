@@ -9,6 +9,7 @@ delivery_bp = Blueprint('delivery', __name__, url_prefix='/delivery')
 def validate_order_status(order, expected_status, delivery_person_id=None):
     """通用訂單狀態校驗函數"""
     if order.order_status != expected_status:
+        
         return False, "訂單狀態不符合預期"
     if delivery_person_id and order.delivery_person_id != delivery_person_id:
         return False, "外送員不匹配"
