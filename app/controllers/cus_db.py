@@ -1,6 +1,7 @@
 from app.models import db,User, Restaurant, Menu, Order, Customer, DeliveryPerson,Review
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.dialects import mysql
+from sqlalchemy.sql import func
 # 獲取所有餐廳
 def get_restaurants():
     try:
@@ -37,6 +38,31 @@ def get_menu_item(item_id):
     except SQLAlchemyError as e:
         print(f"Database error: {e}")
         return None
+
+def get_all_restaurants_with_ratings():
+    """獲取所有餐廳及其平均評價"""
+    restaurants = (
+        db.session.query(
+            Restaurant.id,
+            Restaurant.name,
+            Restaurant.address,
+            Restaurant.phone,
+            func.avg(Review.rating).label('avg_rating')
+        )
+        .outerjoin(Review, Restaurant.id == Review.restaurant_id)
+        .group_by(Restaurant.id)
+        .all()
+    )
+    return [
+        {
+            'id': r.id,
+            'name': r.name,
+            'address': r.address,
+            'phone': r.phone,
+            'avg_rating': r.avg_rating or 0  # 如果沒有評價則返回 0
+        }
+        for r in restaurants
+    ]
 
 # 獲取指定餐廳的所有菜單
 def get_menus_by_restaurant(restaurant_id):

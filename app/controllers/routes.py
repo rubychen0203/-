@@ -4,7 +4,7 @@ from flask import Blueprint, redirect, url_for, render_template, session, flash
 main_blueprint = Blueprint('main', __name__)
 
 from flask import Flask, jsonify
-from app.controllers.cus_controller import get_restaurants
+from app.controllers.cus_db import get_restaurants, get_all_restaurants_with_ratings
 
 
 
@@ -77,13 +77,13 @@ def restaurant_dashboard():
     else:
         flash("You need to log in as a restaurant.", "warning")
         return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
-
-
+    
 # 客戶主頁
 @main_blueprint.route('/customer_dashboard')
 def customer_dashboard():
     if 'user_id' in session and session.get('role') == 'CUSTOMER':
-        restaurants = get_restaurants()
+        # 調用資料庫服務層的方法
+        restaurants = get_all_restaurants_with_ratings()
         return render_template('customer/customer_dashboard.html', restaurants=restaurants)
     else:
         flash("You need to log in as a customer.", "warning")

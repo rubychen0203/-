@@ -9,6 +9,11 @@
         {% for restaurant in restaurants %}
         <li>
             <strong>{{ restaurant.name }}</strong>
+            {% if restaurant.avg_rating is not none %}
+                （評價：{{ restaurant.avg_rating | round(1) }}）
+            {% else %}
+                （暫無評價）
+            {% endif %}
             <p>地址: {{ restaurant.address }}</p>
             <p>電話: {{ restaurant.phone }}</p>
             <a href="{{ url_for('customer.menu', restaurant_id=restaurant.id) }}">查看菜單</a>
