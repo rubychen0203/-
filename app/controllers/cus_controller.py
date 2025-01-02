@@ -33,20 +33,21 @@ def view_cart(restaurant_id):
 
 @customer_blueprint.route('/checkout', methods=['POST'])
 def checkout():
-    print(session['user_id'],session['role'])
+    print(session['user_id'], session['role'])
     if 'cart' not in session or not session['cart']:
         return redirect(url_for('main.index'))
 
     restaurant_id = session['cart'][0]['restaurant_id']
-    order_details=str(item['item_name'] for item in session['cart'])
+    # 使用 join 將項目名稱連接成字符串
+    order_details = ", ".join(item['item_name'] for item in session['cart'])
     total_amount = sum(item['price'] for item in session['cart'])
     order_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     delivery_address = request.form['delivery_address']
     print(session['user_id'])
     print(session['role'])
-    customer_id=get_customer_id_by_user_id(session['user_id'])
+    customer_id = get_customer_id_by_user_id(session['user_id'])
     print(customer_id)
-    print(customer_id)
+
     order_id = insert_order(
         customer_id=customer_id,
         restaurant_id=restaurant_id,
@@ -59,6 +60,7 @@ def checkout():
     print(order_id)
     session.pop('cart', None)
     return redirect(url_for('customer.order_waiting', order_id=order_id))
+
 
 @customer_blueprint.route('/order_waiting/<int:order_id>')
 def order_waiting(order_id):
