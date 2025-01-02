@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Select Restaurant</title>
+    <title>選擇餐廳</title>
 </head>
 <body>
-    <h1>Select a Restaurant</h1>
+    <h1>選擇餐廳</h1>
     <ul>
         {% for restaurant in restaurants %}
         <li>
             <strong>{{ restaurant.name }}</strong>
-            <p>Address: {{ restaurant.address }}</p>
-            <p>Phone: {{ restaurant.phone }}</p>
-            <a href="{{ url_for('customer.menu', restaurant_id=restaurant.id) }}">View Menu</a>
+            <p>地址: {{ restaurant.address }}</p>
+            <p>電話: {{ restaurant.phone }}</p>
+            <a href="{{ url_for('customer.menu', restaurant_id=restaurant.id) }}">查看菜單</a>
         </li>
         {% endfor %}
     </ul>
     <!-- 添加登出按鈕 -->
     <form action="{{ url_for('auth.logout') }}" method="GET" style="display: inline;">
-        <button type="submit">Logout</button>
+        <button type="submit">登出</button>
     </form>
 </body>
 </html>

@@ -4,28 +4,28 @@
     <title>Menu</title>
 </head>
 <body>
-    <h1>Menu for {{ restaurant.name }}</h1>
+    <h1>{{ restaurant.name }}菜單</h1>
     <ul>
         {% for item in menus %}
         <li>
             <strong>{{ item.item_name }}</strong> - ${{ item.price }}
             <p>{{ item.description }}</p>
-            <a href="{{ url_for('customer.add_to_cart', item_id=item.id) }}">Add to Cart</a>
+            <a href="{{ url_for('customer.add_to_cart', item_id=item.id) }}">加入購物車</a>
         </li>
         {% endfor %}
     </ul>
 
     <hr>
-    <a href="{{ url_for('customer.view_cart', restaurant_id=restaurant.id) }}">View Cart</a>
+    <a href="{{ url_for('customer.view_cart', restaurant_id=restaurant.id) }}">查看購物車</a>
     <br><br>
 
     <!-- 添加回到首頁並清空購物車按鈕 -->
-    <a href="{{ url_for('customer.clear_cart_and_home') }}">Return to Home</a>
+    <a href="{{ url_for('customer.clear_cart_and_home') }}">回首頁</a>
     <br><br>
 
     <!-- 添加登出按鈕 -->
     <form action="{{ url_for('auth.logout') }}" method="GET" style="display: inline;">
-        <button type="submit">Logout</button>
+        <button type="submit">登出</button>
     </form>
 </body>
 </html>

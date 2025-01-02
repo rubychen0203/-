@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Order Completed</title>
+    <title>完成訂單</title>
 </head>
 <body>
-    <h1>Order Completed Successfully!</h1>
-    <p>Thank you for your order. It has been successfully processed.</p>
+    <h1>訂單完成!</h1>
+    <p>感謝你的購買.給餐廳留下評分吧.</p>
 
     <!-- 评分表单 -->
     <form method="POST" action="{{ url_for('customer.submit_review', order_id=order_id) }}">
         <input type="hidden" name="order_id" value="{{ order_id }}">
-        <label for="rating">Rate your experience (1 to 5):</label>
+        <label for="rating">評分 (1 至 5):</label>
         <select id="rating" name="rating" required>
-            <option value="1">1 - Very Poor</option>
-            <option value="2">2 - Poor</option>
-            <option value="3">3 - Average</option>
-            <option value="4">4 - Good</option>
-            <option value="5">5 - Excellent</option>
+            <option value="1">1 - 特別爛</option>
+            <option value="2">2 - 爛</option>
+            <option value="3">3 - 普通</option>
+            <option value="4">4 - 不錯</option>
+            <option value="5">5 - 非常好</option>
         </select>
         <br><br>
-        <label for="comment">Add a comment (optional):</label><br>
-        <textarea id="comment" name="comment" rows="4" cols="50" placeholder="Share your experience..."></textarea>
+        <label for="comment">新增評語 (optional):</label><br>
+        <textarea id="comment" name="comment" rows="4" cols="50" placeholder="留下一點文字吧..."></textarea>
         <br><br>
-        <button type="submit">Submit Review</button>
+        <button type="submit">完成</button>
     </form>
 
 
     <br>
-    <a href="/">Return to Home</a>
+    <a href="/">回首頁</a>
 </body>
 </html>

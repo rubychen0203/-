@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Order Waiting</title>
+    <title>等待訂單</title>
     <style>
         /* 狀態顯示區域樣式 */
         #statusCorner {
@@ -24,7 +24,7 @@
     <script>
         // 禁止頁面離開
         window.onbeforeunload = function() {
-            return "Your order is still being processed. Are you sure you want to leave?";
+            return "你的訂單還在準備.千萬不要離開";
         };
 
         // 每隔 5 秒檢查訂單狀態
@@ -36,28 +36,28 @@
                 const orderStatus = data.status.order_status;
                 const paymentStatus = data.status.payment_status;
 
-                console.log('Order Status:', orderStatus);
-                console.log('Payment Status:', paymentStatus);
+                console.log('訂單狀態:', orderStatus);
+                console.log('付款狀態:', paymentStatus);
 
                 // 更新顯示
                 const orderStatusText = document.getElementById('orderStatus');
                 if (orderStatus === 'PREPARING') {
-                    orderStatusText.innerText = 'Order Status: 餐點正在製作中';
+                    orderStatusText.innerText = '訂單狀態: 餐點正在製作中';
                 } else if (orderStatus === 'OUT_FOR_DELIVERY') {
-                    orderStatusText.innerText = 'Order Status: 外送員正在路上';
+                    orderStatusText.innerText = '訂單狀態: 外送員正在路上';
                 } else if (orderStatus === 'DELIVERED') {
-                        orderStatusText.innerText = 'Order Status: 外送員已抵達';
+                        orderStatusText.innerText = '訂單狀態: 外送員已抵達';
                 } else if (orderStatus === 'GET') {
-                        orderStatusText.innerText = 'Order Status: 已確認取餐';
+                        orderStatusText.innerText = '訂單狀態: 已確認取餐';
                 } else {
-                    orderStatusText.innerText = `Order Status: ${orderStatus}`;
+                    orderStatusText.innerText = `訂單狀態: ${orderStatus}`;
                 }
 
                 const paymentStatusText = document.getElementById('paymentStatus');
                 if (paymentStatus === 'PENDING') {
-                    paymentStatusText.innerText = 'Payment Status: 未付款';
+                    paymentStatusText.innerText = '付款狀態: 未付款';
                 }  else {
-                    paymentStatusText.innerText = `Payment Status: ${paymentStatus}`;
+                    paymentStatusText.innerText = `付款狀態: ${paymentStatus}`;
                 }
 
                 // 檢查是否顯示按鈕
@@ -87,13 +87,13 @@
     </script>
 </head>
 <body>
-    <h1>Your order is being processed...</h1>
-    <p>Please do not leave this page until your order is complete.</p>
+    <h1>你的訂單正在製作...</h1>
+    <p>訂單完成前不要離開頁面.</p>
 
     <!-- 狀態顯示區域 -->
     <div id="statusCorner">
-        <p id="orderStatus">Order Status: Loading...</p>
-        <p id="paymentStatus">Payment Status: Loading...</p>
+        <p id="orderStatus">訂單狀態: Loading...</p>
+        <p id="paymentStatus">付款狀態: Loading...</p>
     </div>
 
     <!-- 狀態更新按鈕 -->

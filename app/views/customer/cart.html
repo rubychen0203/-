@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Shopping Cart</title>
+    <title>購物車</title>
 </head>
 <body>
-    <h1>Your Shopping Cart</h1>
+    <h1>你的購物車</h1>
     <ul>
         {% if cart %}
             {% for item in cart %}
@@ -13,21 +13,21 @@
                 <p>{{ item['description'] }}</p>
             </li>
             {% endfor %}
-            <li><strong>Total:</strong> ${{ cart | sum(attribute='price') }}</li>
+            <li><strong>總金額:</strong> ${{ cart | sum(attribute='price') }}</li>
         {% else %}
-            <p>Your cart is empty!</p>
+            <p>你的購物車是空的!</p>
         {% endif %}
     </ul>
 
     {% if cart %}
     <form method="POST" action="{{ url_for('customer.checkout') }}">
-        <label for="delivery_address">Delivery Address:</label>
+        <label for="delivery_address">輸入外送地址:</label>
         <input type="text" name="delivery_address" required>
-        <button type="submit">Checkout</button>
+        <button type="submit">下單</button>
     </form>
     {% endif %}
 
     <hr>
-    <a href="{{ url_for('customer.menu',restaurant_id=restaurant_id) }}">Back to Menu</a>
+    <a href="{{ url_for('customer.menu',restaurant_id=restaurant_id) }}">回菜單</a>
 </body>
 </html>
