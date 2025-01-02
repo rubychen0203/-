@@ -36,25 +36,26 @@ def login():
 def register():
     return render_template('register.html')
 
-# # 根據用戶角色導向不同的主頁
-# @main_blueprint.route('/home')
-# def dashboard():
-#     if 'user_id' in session:
-#         user_role = session.get('role')  # 從 session 獲取用戶角色
-#         if user_role == 'ADMIN':
-#             return redirect(url_for('main.platform_dashboard'))  # 管理員主頁
-#         elif user_role == 'RESTAURANT':
-#             return redirect(url_for('main.restaurant_dashboard'))  # 商家主頁
-#         elif user_role == 'CUSTOMER':
-#             return redirect(url_for('main.customer_dashboard'))  # 客戶主頁
-#         elif user_role == 'DELIVERY_PERSON':
-#             return redirect(url_for('main.delivery_dashboard'))  # 外送員主頁
-#         else:
-#             flash("Invalid role.", "warning")
-#             return redirect(url_for('auth.login'))  # 若角色無效，跳轉到登入頁面
-#     else:
-#         flash("You need to log in first.", "warning")
-#         return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
+
+# 根據用戶角色導向不同的主頁
+@main_blueprint.route('/dashboard')
+def dashboard():
+    if 'user_id' in session:
+        user_role = session.get('role')  # 從 session 獲取用戶角色
+        if user_role == 'ADMIN':
+            return redirect(url_for('main.platform_dashboard'))  # 管理員主頁
+        elif user_role == 'RESTAURANT':
+            return redirect(url_for('restaurant.restaurant_dashboard'))  # 商家主頁
+        elif user_role == 'CUSTOMER':
+            return redirect(url_for('main.customer_dashboard'))  # 客戶主頁
+        elif user_role == 'DELIVERY_PERSON':
+            return redirect(url_for('main.delivery_dashboard'))  # 外送員主頁
+        else:
+            flash("Invalid role.", "warning")
+            return redirect(url_for('auth.login'))  # 若角色無效，跳轉到登入頁面
+    else:
+        flash("You need to log in first.", "warning")
+        return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
 
 # 管理員頁面
 @main_blueprint.route('/platform_dashboard')
@@ -69,10 +70,14 @@ def admin_dashboard():
 @main_blueprint.route('/restaurant_dashboard')
 def restaurant_dashboard():
     if 'user_id' in session and session.get('role') == 'RESTAURANT':
-        return render_template('restaurant/restaurant_dashboard.html')  # 顯示餐廳主頁
+        # 從 session 中獲取 user_id
+        user_id = session.get('user_id')
+        # 將 user_id 傳遞到模板
+        return redirect(url_for('restaurant.restaurant_dashboard'))  # 顯示餐廳主頁
     else:
         flash("You need to log in as a restaurant.", "warning")
         return redirect(url_for('auth.login'))  # 若未登入，跳轉到登入頁面
+
 
 # 客戶主頁
 @main_blueprint.route('/customer_dashboard')

@@ -1,0 +1,52 @@
+{% block content %}
+    <div class="container" style="margin-top: 40px;">
+        <h1 class="text-center" style="font-size: 2.5em; color: #333;">菜單管理</h1>
+        <div class="menu-table">
+            <table class="table table-bordered">
+                <thead>
+                    <br>
+                    <tr>
+                        <th>名稱</th>
+                        <th>價格</th>
+                        <th>介紹</th>
+                        <th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in menu_items %}
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ '可供應' if item.available else '暫時停售' }}</td>
+                        
+                        <td>
+                            <form action="{{ url_for('restaurant.delete_menu_item', item_id=item.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除嗎？')">刪除</button>
+                            </form>
+                            <a href="{{ url_for('restaurant.edit_menu', item_id=item.id) }}" class="btn btn-outline-primary">編輯</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 顯示餐廳的平均評分 -->
+            {% set avg_rating = restaurant_avg_ratings[restaurant.id] %}
+            <div class="text-center" style="margin-top: 20px;">
+                <h3>餐廳評分： 
+                    {% if avg_rating is not none %}
+                        {{ avg_rating | round(1) }}
+                    {% else %}
+                        無評分
+                    {% endif %}
+                </h3>
+            </div>
+
+            <a href="{{ url_for('restaurant.edit_menu') }}" class="btn btn-outline-primary">新增菜單項目</a>
+            <a href="{{ url_for('restaurant.view_orders') }}" class="btn btn-outline-primary">查看訂單</a>
+            <a href="{{ url_for('restaurant.edit_restaurant') }}" class="btn btn-danger">修改資料</a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">登出</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.models import db, User, Customer, Restaurant, DeliveryPerson
+from app.models import db, User, Customer, Restaurant, DeliveryPerson,Review
+from sqlalchemy import func
+
 
 # 建立 Blueprint
 auth_blueprint = Blueprint('auth', __name__, template_folder='../views/auth')
@@ -93,14 +95,28 @@ def login():
 
         # 檢查密碼
         if user and check_password_hash(user.password, password):
+            # 儲存登入資訊到 session
             session['user_id'] = user.id
-            session['role'] = str(user.role) # 儲存使用者角色
+            session['role'] = str(user.role)  # 儲存使用者角色
+
             flash("Login successful!", "success")
             
-            # 根據使用者角色重定向到不同頁面
+            # 根據使用者角色進行跳轉
             if user.role.value == 'ADMIN':
                 return redirect(url_for('main.admin_dashboard'))
             elif user.role.value == 'RESTAURANT':
+                # 查詢餐廳及其平均評分
+                restaurant = Restaurant.query.filter_by(user_id=user.id).first()
+                if restaurant:
+                    avg_rating = (
+                        db.session.query(func.avg(Review.rating))
+                        .filter(Review.restaurant_id == restaurant.id)
+                        .scalar()
+                    )
+                    avg_rating = avg_rating if avg_rating is not None else 0
+                    session['restaurant_avg_rating'] = avg_rating  # 將評分存入 session
+                else:
+                    flash("No associated restaurant found.", "warning")
                 return redirect(url_for('main.restaurant_dashboard'))
             elif user.role.value == 'CUSTOMER':
                 return redirect(url_for('main.customer_dashboard'))

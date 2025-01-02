@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="keywords" content="外送, 訂單, 平台">
+<meta name="description" content="外送員待接清單">
+<title>待接清單</title>
+
+</head>
+
+<body>
+    <div id="container">
+        {% extends "base.html" %}
+
+{% block content %}
+    <h1>待接單列表</h1>
+
+    {% if orders and orders|length > 0 %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>訂單編號</th>
+                    <th>取餐地址</th>
+                    <th>送達地址</th>
+                    <th>金額</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.restaurant_address }}</td>
+                        <td>{{ order.delivery_address }}</td>
+                        <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                        <td>
+                            <form action="{{ url_for('delivery.accept_order', order_id=order.id) }}" method="post">
+                                <button type="submit" class="btn btn-success">接單</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>目前沒有可用的訂單。</p>
+    {% endif %}
+    <button onclick="location.reload()" class="confirm-btn">重新整理頁面</button>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">返回個人頁面</a>
+{% endblock %}
+
+</html>
+
+

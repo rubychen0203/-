@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="zh-Hant-TW">
 <head>
     <meta charset="UTF-8" />
@@ -20,5 +21,38 @@
 
     <p>RESTAURANT</p>
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+=======
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>餐廳儀表板</title>
+</head>
+<body>
+    <h1>餐廳儀表板</h1>
+
+    <!-- 顯示 flash 訊息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- 顯示當前查詢的 user_id -->
+    <p>當前查詢的 user_id: {{ user_id }}</p>
+
+    <!-- 顯示餐廳資料 -->
+    {% if restaurant %}
+        <p>商家名稱：{{ restaurant.name }}</p>
+        <p>商家地址：{{ restaurant.address }}</p>
+        <p>商家電話：{{ restaurant.phone }}</p>
+    {% else %}
+        <p>目前無商家資料。</p>
+    {% endif %}
+>>>>>>> origin/Restaurant
 </body>
 </html>

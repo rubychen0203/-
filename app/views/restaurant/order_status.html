@@ -1,0 +1,38 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>訂單編號</th>
+            <th>餐廳</th>
+            <th>總金額</th>
+            <th>狀態</th>  <!-- 新增操作欄位 -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.restaurant.name if order.restaurant else 'N/A' }}</td>
+            <td>{{ order.total_amount }}</td>
+            <td>
+                <!-- 顯示按鈕只有在訂單狀態為 PREPARING 時才顯示 -->
+                {% if order.order_status.value == 'PREPARING' %}
+                <form action="{{ url_for('restaurant.update_order_status', order_id=order.id) }}" method="POST">
+                    <button type="submit" class="btn btn-success">備餐完畢</button>
+                </form>
+                {% else %}
+                    <!-- 當訂單狀態為其他狀態時，顯示訂單狀態 -->
+                    <span>{{ order.order_status.value }}</span>
+                {% endif %}
+            </td>
+            
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 顯示結算金額 -->
+<div class="mt-3">
+    <strong>所有訂單總金額：</strong> {{ total_amount }}
+</div>
+<a href="{{ url_for('restaurant.restaurant_dashboard') }}">返回菜單列表</a>

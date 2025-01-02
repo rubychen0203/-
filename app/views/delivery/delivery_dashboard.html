@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="zh-Hant-TW">
 <head>
     <meta charset="UTF-8" />
@@ -6,5 +7,30 @@
 </head>
 <body>
     <p>DELIVERY</p>
+=======
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>外送員儀表板</title>
+</head>
+<body>
+    <h1>個人頁面</h1>
+
+    <!-- 個人資訊 -->
+    <div>
+        <h2>關於我</h2>
+        {% if delivery_person %}
+            <p>姓名：{{ delivery_person.name }}</p>
+            <p>電話：{{ delivery_person.phone }}</p>
+			<p>營收：{{ delivery_person.earnings }}</p>
+        {% else %}
+            <p>找不到外送員資訊。</p>
+        {% endif %}
+    
+
+    <!-- 功能按鈕 -->
+      <a href="{{ url_for('delivery.deorders') }}" class="btn btn-danger">開始接單</a>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">登出</a>
+>>>>>>> origin/Restaurant
 </body>
 </html>

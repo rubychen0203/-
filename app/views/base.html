@@ -6,6 +6,7 @@
     <title>{% block title %}My App{% endblock %}</title>
 </head>
 <body>
+
 <!-- flash通知-->
 {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
@@ -16,6 +17,7 @@
         </div>
     {% endif %}
 {% endwith %}    
+
     <header>
         <h1>My App</h1>
     </header>
