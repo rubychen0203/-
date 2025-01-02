@@ -9,6 +9,7 @@ delivery_bp = Blueprint('delivery', __name__, url_prefix='/delivery')
 def validate_order_status(order, expected_status, delivery_person_id=None):
     """通用訂單狀態校驗函數"""
     if order.order_status != expected_status:
+        
         return False, "訂單狀態不符合預期"
     if delivery_person_id and order.delivery_person_id != delivery_person_id:
         return False, "外送員不匹配"
@@ -125,27 +126,77 @@ def start_delivery():
         delivery_person_id=delivery_person.id,
         order_status=OrderStatusEnum.OUT_FOR_DELIVERY
     ).all()
-    restaurant = Restaurant.query.get(orders.restaurant_id)
-
 
     if not orders:
         flash("目前沒有正在配送的訂單", "info")
         return redirect(url_for('main.dashboard'))
 
     # 整理數據
-    data = [{
-        "id": order.id,
-        "order_status": order.order_status.name,
-        "restaurant_name": restaurant.restaurant_name,
-        "payment_status": order.payment_status,
-        "restaurant_name": order.name,
-        "total_amount": order.total_amount,
-        "delivery_address": order.delivery_address,
-        "restaurant_address": restaurant.address,
-        "customer_phone": order.customer_phone
-    } for order in orders]
+    data = []
+    for order in orders:
+        restaurant = Restaurant.query.get(order.restaurant_id)  # 查詢單一餐廳
+        data.append({
+            "id": order.id,
+            "order_status": order.order_status.name,
+            "restaurant_name": restaurant.name,
+            "payment_status": order.payment_status,
+            "total_amount": order.total_amount,
+            "delivery_address": order.delivery_address,
+            "restaurant_address": restaurant.address,
+            "customer_phone": order.customer_phone
+        })
     
     return render_template('delivery/start_delivery.html', data=data)
+
+@delivery_bp.route('/orders/arrive/<int:order_id>', methods=['POST', 'GET'])
+def arrive(order_id):
+    """確認送達"""
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("請先登入", "warning")
+        return redirect(url_for('auth.login'))
+
+    # 查找外送員
+    delivery_person = DeliveryPerson.query.filter_by(user_id=user_id).first()
+    if not delivery_person:
+        flash("找不到外送員資訊，請確認您的帳號", "warning")
+        return redirect(url_for('auth.login'))
+
+    # 查找訂單
+    order = Order.query.get_or_404(order_id)
+    is_valid, error_message = validate_order_status(order, OrderStatusEnum.OUT_FOR_DELIVERY, delivery_person.id)
+    if not is_valid:
+        flash(error_message, "danger")
+        return redirect(url_for('delivery.view_current_order'))
+
+    # 更新狀態為「已送達」
+    try:
+        order.order_status = OrderStatusEnum.DELIVERED
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] 確認送達失敗: {e}")
+        flash("確認送達過程中發生錯誤，請稍後再試", "danger")
+        return redirect(url_for('delivery.view_current_order'))
+
+    # 準備單一訂單資料
+    order_data = {
+        "id": order.id,
+        "total_amount": order.total_amount,
+    }
+
+    # 跳轉到完成訂單頁面，並傳遞訂單資訊
+    return render_template(
+        'delivery/finished_de.html', order=order_data
+    )
+
+
+        
+   
+
+
+
+
 
 @delivery_bp.route('/orders/complete/<int:order_id>', methods=['POST', 'GET'])
 def complete_order(order_id):
@@ -163,14 +214,11 @@ def complete_order(order_id):
 
     # 查找訂單
     order = Order.query.get_or_404(order_id)
-    if order.order_status != OrderStatusEnum.OUT_FOR_DELIVERY:
-        flash("訂單無法完成配送，請確認狀態", "warning")
-        return redirect(url_for('delivery.view_current_order'))
+
 
     # 更新訂單狀態與外送員收益
     try:
         order.payment_status = PaymentStatusEnum.COMPLETED
-        order.order_status = OrderStatusEnum.DELIVERED
         delivery_person.earnings += order.total_amount * Decimal('0.05')
         delivery_person.current_order_id = None  # 完成訂單後清除正在配送的訂單
         db.session.commit()

@@ -48,7 +48,7 @@
     <button type="button" class="confirm-btn">
         <a href="tel:{{ rec.customer_phone }}" style="color: white; text-decoration: none;">聯絡買家</a>
     </button>
-    <a href="{{ url_for('delivery.complete_order', order_id=rec.id) }}" class="btn btn-danger">完成訂單</a>
+    <a href="{{ url_for('delivery.arrive', order_id=rec.id) }}" class="btn btn-danger">送達目的地</a>
 </div>
 {% endfor %}
 
